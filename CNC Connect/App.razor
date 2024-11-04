@@ -1,0 +1,25 @@
+﻿@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <Authorizing>
+                <MudText Color="Color.Primary" Typo="Typo.body1">Autorizando ...</MudText>
+            </Authorizing>
+            <NotAuthorized>
+                <MudText Color="Color.Primary" Typo="Typo.body1">No estás autorizado para ver este contenido...</MudText>
+            </NotAuthorized>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <CascadingAuthenticationState>
+            <PageTitle>No encontrado</PageTitle>
+            @* Manejar la redirección directamente aquí *@
+            @{
+                navigationManager.NavigateTo("/");
+            }
+        </CascadingAuthenticationState>
+    </NotFound>
+</Router>

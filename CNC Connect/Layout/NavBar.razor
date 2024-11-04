@@ -1,0 +1,38 @@
+﻿@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject AuthenticationProviderJWT authProvider
+@inject MudBlazor.IDialogService DialogService
+@inject HttpClient Http
+@inject AuthenticationProviderJWT authProvider
+
+<MudAppBar class="Navbar gradiente" Fixed="true">
+    <MudLink Underline="Underline.None" Href="/" Color="Color.Inherit" Class="navbar-title">
+        <i class="fa-solid fa-paper-plane"></i>
+        <MudText Typo="Typo.h6" Color="Color.Inherit">APP MENSAJE</MudText>
+    </MudLink>
+    <MudSpacer />
+
+    <div class="navbar-user-container">
+        <MudLink Color="Color.Inherit" Underline="Underline.None" Class="navbar-user">
+            Hola, @usuario
+            <i class="fa-solid fa-user-gear"></i>
+        </MudLink>
+
+        <div class="navbar-user-submenu-container">
+            <a href="Logout" class="navbar-user-logout"> Cerrar sesion</a>
+        </div>
+        
+    </div>
+
+    
+</MudAppBar>
+
+@code {
+    private string usuario = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authProvider.GetAuthenticationStateAsync();
+        usuario = authState.User.FindFirst("FirstName")!.Value;
+    }
+}

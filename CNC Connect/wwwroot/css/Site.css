@@ -1,0 +1,428 @@
+﻿:root {
+    --bg-verde: rgb(5, 245, 205);
+    --bg-azul: rgb(5, 137, 245);
+    --bg-azul-tabla: rgb(30,70,130);
+    --bg-de: linear-gradient(to right, rgb(0,28,33),rgb(15,52,58),rgb(53,87,89));
+    --bg-deI: linear-gradient(to left, rgb(1, 9, 32), rgb(6, 22, 56), rgb(22, 70, 140));
+}
+
+.gradiente {
+    background: var(--bg-de);
+}
+
+.Body {
+    height: 90vh;
+    display: flex;
+    align-items: flex-start;
+}
+p{
+    margin:0;
+}
+
+.Navbar {
+    flex: 3;    
+}
+
+.navbar-title{
+    display: flex;
+    gap: 10px;
+    align-items:center;
+}
+
+.navbar-title i{
+    font-size: 1.5em;
+}
+
+.navbar-user-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+    .navbar-user-container:hover .navbar-user-submenu-container{
+        display: flex;
+    }
+.navbar-user-submenu-container {
+    display: none;
+    position: absolute;
+    top: 110%; /* Aparece justo debajo del enlace */
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 1000;
+    width:max-content;
+}
+
+.navbar-user-logout {
+    text-decoration: none;
+    color: #000;
+    padding: 5px 10px;
+    display: block;
+    font-size: 1.1em;
+    border-radius: 5px;
+    transition: .5s;
+}
+
+    .navbar-user-logout:hover {
+        background-color: #32956f;
+        color: #eee;
+    }
+
+.navbar-user-submenu-container::before {
+    content: "";
+    position: absolute;
+    top: -5px; /* Ajusta la posición de la flecha */
+    right: 40%; /* Ajusta según el diseño */
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #ffffff; /* Mismo color que el fondo del menú */
+}
+
+
+.navbar-user{
+    font-size: 1.2em;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.navbar-user i{
+    font-size:1.5em;
+}
+
+
+
+
+/*Login*/
+.Login {
+    background: url("/assets/fondo2.png") no-repeat center center fixed;
+    background-size: cover;
+    width: 100%;
+    height: 100vh;
+    align-content: center;
+    justify-items: center;
+}
+
+.LoginContainer {
+    background-color: rgba(255,255,255,0.2);
+    border-radius: 15px;
+    backdrop-filter: blur(100px);
+    padding: 25px;
+    width: 35%;
+    height: min-content;
+    display: flex;
+    flex-direction: column;
+}
+
+.img-form{
+    display: flex;
+    justify-content:space-between;
+    padding: 20px;
+}
+
+.icon-container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 1.3em;
+    color: #074d58;
+    font-weight: 500;
+}
+
+.icon-container i {
+    font-size:2em;
+}
+
+.icon-image {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+}
+
+.LoginForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.form-input{
+    display: flex;
+    gap: 20px;
+    color: #ccc;
+    align-items: center;
+    justify-content:space-between;
+}
+
+.form-input i{
+    font-size: 2em;
+}
+
+.formLoginInput {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin: 20px 0;
+    width: 100%;
+}
+
+    .formLoginInput input {
+        border-radius: 25px;
+        padding: 15px;
+        width: 100%;
+        font-size: 1.3em;
+        background-color: rgba(240, 240, 240, 0.3);
+        outline: none;
+        color: #fff;
+        cursor: text;
+    }
+
+.label {
+    color: #fff;
+    font-size: 1.3em;
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    transition: 0.2s;
+    pointer-events: none;
+}
+
+.formLoginInput input:focus ~ .label,
+.formLoginInput input:valid ~ .label {
+    top: -20px;
+    left: 20px;
+    font-size: 1.1em;
+    background-color: transparent;
+    color: #fff;
+    padding: 0 5px;
+    border-radius: 15px;
+}
+
+.formLoginInput i{
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    transition: 0.2s;
+}
+
+.formLoginInput i:hover {
+   color: #EEE;
+   cursor: pointer;
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.btn {
+    background-color: #25adc2;
+    border-radius: 20px;
+    color: #EEE;
+    font-size: 1.2em;
+    padding: 10px 20px;
+}
+
+    .btn:hover {
+        color: #EEE;
+        background-color: #2195a7;
+    }
+
+.LoginContainerButton {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*Menu Lateral*/
+
+.LateralMenu {
+    box-sizing: border-box;
+    position: fixed;
+    width: 200px;
+    top: 63px;
+    left: 0;
+    height: 90vh;
+    overflow-y: auto;
+    z-index: 1000;
+    padding: 20px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    position: relative;
+    overflow: visible;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-size: 1.1em;
+    position:relative;
+}
+
+.menu-item {
+    padding: 15px;
+    display: flex; 
+    position:relative;
+    gap: 10px;
+    align-items: center;
+    justify-content: start;
+    text-align: center;
+    font-size: 1.2em;
+    border-radius: 5px;
+    transition: .2s;
+}
+
+    .menu-item:hover {
+        background-color: #32956f;
+        color: #eee;
+        text-decoration: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+        .menu-item:hover a {
+            color: #eee;
+        }
+
+.submenu-container {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    width: max-content;
+    padding: 20px;
+    border-radius: 5px;
+    transition: 5s;
+    left: 100%;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.menu-item .submenu-container li a {
+    color: #333;
+    cursor: pointer;
+    transition: .5s;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.menu-item .submenu-container li:hover a {
+    color: #32956f;
+    background-color: #f6f9f8;
+}
+
+.menu-item:hover .submenu-container{
+    display:flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.submenu-container::before {
+    content: "";
+    position: absolute;
+    top: 40%; /* Ajusta la posición vertical de la flecha */
+    left: -10px; /* Posición horizontal para que el triángulo esté en el borde izquierdo */
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #ffffff; /* Color del triángulo, igual al fondo del submenú */
+}
+
+@media (min-width: 1480px) {
+    .LoginContainer {
+        width: 25%;
+    }
+}
+@media (max-width: 900px){
+    .LoginContainer {
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        left: 0;
+        top: 0;
+    }
+    .LoginForm{
+        width: 80%
+    }
+    .imgLogin{
+        width: 80%
+    }
+    .ButtonMenu {
+        display: flex;
+    }
+}
+
+/*meta*/
+
+.container-body{
+    margin-top: 100px;
+    display: flex;
+    flex-direction:column;
+}
+
+.container-items{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.items-btn {
+    position:relative;
+    display: flex;
+    align-items: center; /* Centra verticalmente el icono y el texto */
+    gap: 10px; /* Ajusta el espacio entre el icono y el texto */
+    font-size: 1.3em;
+    font-weight: 500;
+    text-align: center;
+    transition: color 0.4s linear;
+    padding: 10px 15px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+    .items-btn i {
+        font-size: 2em;
+}
+
+.items-btn:hover{
+    color: #eee;
+}
+
+    .items-btn::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+        z-index: -1;
+        transition: transform 0.5s;
+        transform-origin: 0 0;
+        transition-timing-function: cubic-bezier(0,5,1.6,0.4,0.7);
+        transform: scaleX(0)
+    }
+
+.items-btn:hover::before{
+    transform: scaleX(1);
+}
+
+    .items-btn.whatsapp::before {
+        background: linear-gradient(45deg, #25D366, #128C7E); /* Verde de WhatsApp */
+    }
+
+    .items-btn.instagram::before {
+        background: linear-gradient(45deg, #833AB4, #C13584, #F56040, #FFDC80); /* Gradiente de Instagram */
+    }
+
+    .items-btn.facebook::before {
+        background: linear-gradient(45deg, #1877F2, #3b5998); /* Azul de Facebook */
+    }

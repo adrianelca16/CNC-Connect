@@ -1,0 +1,97 @@
+﻿@page "/Login"
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+@inject ILoginService loginService
+
+<div class="Login">
+    <div class="LoginContainer">
+        <div class="img-form">
+            <div class="icon-container">
+                <MudImage Src="assets/whatsapp.png" class="icon-image"></MudImage>
+               <p>WhatsApp</p>
+            </div>
+            <div class="icon-container">
+                <MudImage Src="assets/email.png" class="icon-image"></MudImage>
+                <p>Email</p>
+            </div>
+            <div class="icon-container">
+                <MudImage Src="assets/mensaje.png" class="icon-image"></MudImage>
+                <p>SMS</p>
+            </div>
+        </div>
+
+        <EditForm Model="loginDTO" OnValidSubmit="LoginAsync" class="LoginForm">
+            <DataAnnotationsValidator />
+            <div class="form-input">
+                <i class="fa-solid fa-user"></i>
+                <div class="formLoginInput">
+                    <input type="number" required @bind="@loginDTO.Cedula" inputmode="numeric" pattern="[0-9]*" />
+                    <label class="label">Usuario</label>
+                    <ValidationMessage For="@(() => loginDTO.Cedula)" />
+                </div>
+            </div>
+
+           <div class="form-input">
+                <i class="fa-solid fa-lock"></i>
+                <div class="mb-3 formLoginInput">
+                    <input type="@type" required @bind="@loginDTO.Password" />
+                    <label class="label">Contraseña</label>
+
+                    @if (password)
+                    {
+                        <i class="fa-solid fa-eye" @onclick="TogglePasswordVisibility"></i>
+                    }
+                    else
+                    {
+                        <i class="fa-solid fa-eye-slash" @onclick="TogglePasswordVisibility"></i>
+                    }
+                    <ValidationMessage For="@(() => loginDTO.Cedula)" />
+                </div>
+           </div>
+
+
+
+            
+@*             <div class="mb-3 inputbox">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" />
+                <label>Usuario</label>
+                <MudTextField Label="Contraseña" @bind-Value="@loginDTO.Password" Variant="Variant.Text" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" />
+                <ValidationMessage For="@(() => loginDTO.Password)" />
+            </div> *@
+
+            <div class="LoginContainerButton">
+                <button class="btn" type="submit">Iniciar Sesión</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+@code {
+    private LoginDTO loginDTO = new();
+
+    private async Task LoginAsync()
+    {
+        var responseHttp = await repository.Post<LoginDTO, TokenDTO>("/api/accounts/Login", loginDTO);
+        if (responseHttp.Error)
+        {
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        await loginService.LoginAsync(responseHttp.Response!.Token);
+        navigationManager.NavigateTo("/");
+    }
+
+    private string type = "password";
+
+    private bool password = true;
+
+    private void TogglePasswordVisibility()
+    {
+        password = !password;
+        type = password ? "password" : "text";
+    }
+
+}

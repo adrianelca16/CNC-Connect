@@ -1,0 +1,13 @@
+﻿@page "/Logout"
+@inject ILoginService loginService
+@inject NavigationManager navigationManager
+
+<MudText Color="Color.Primary" Typo="Typo.h3">Cerrando Sesión ...</MudText>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await loginService.LogoutAsync();
+        navigationManager.NavigateTo("/Login");
+    }
+}

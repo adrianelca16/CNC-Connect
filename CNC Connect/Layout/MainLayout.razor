@@ -1,0 +1,50 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager navigationManager
+
+<MudThemeProvider @bind-IsDarkMode="@isDark" Theme="Theme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout class="Body">
+    <AuthorizeView>
+        <NotAuthorized>
+            @if (!IsLoginPage())
+            {
+                @RedirectToLogin()
+            }
+        </NotAuthorized>
+        <Authorized>
+            <NavBar /> 
+            <LateralMenu/>
+        </Authorized>
+    </AuthorizeView>
+    <main>
+        @Body
+    </main>
+</MudLayout>
+
+@code{
+    private bool isDark = false;
+
+    private MudTheme Theme = new MudTheme()
+        {
+            PaletteLight = new PaletteLight()
+            {
+                Secondary = Colors.Red.Lighten1, // Color primario
+                Primary = Colors.Teal.Lighten1, // Color secundario
+                                     // Tertiary = "rgba(120, 220, 255,1)"
+            }
+        };
+
+    private RenderFragment RedirectToLogin() => builder =>
+    {
+        navigationManager.NavigateTo("Login");
+    };
+
+    private bool IsLoginPage()
+    {
+        var currentUri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+        var loginUri = navigationManager.ToAbsoluteUri("Login");
+        return currentUri.Equals(loginUri);
+    }
+}

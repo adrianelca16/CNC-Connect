@@ -1,0 +1,60 @@
+﻿@inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager NavigationManager
+
+<div class="LateralMenu">
+    <ul class="menu">
+        <li class="menu-item">
+            <i class="fa-solid fa-envelope"></i>
+            <a href="#">Correo</a>
+            <ul class="submenu-container">
+                <li>
+                    <a href="#">Redactar</a>
+                </li>
+                <li>
+                    <a href="#">Enviados</a>
+                </li>
+            </ul>
+        </li>
+        <li class="menu-item">
+            <i class="fa-solid fa-message"></i>
+            <a href="#">Mensajes</a>
+            <ul class="submenu-container">
+                <li>
+                    <a href="#">Redactar</a>
+                </li>
+                <li>
+                    <a href="#">Enviados</a>
+                </li>
+            </ul>
+        </li>
+        <li class="menu-item" @onclick="goToMeta">
+               <i class="fa-solid fa-layer-group"></i>
+            <a>Meta</a>
+        </li>
+    </ul>
+</div>
+
+
+@code {
+    private string UserName { get; set; } = null!;
+
+    private void goToMeta()
+    {
+        NavigationManager.NavigateTo("Meta");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            UserName = user!.Identity!.Name!;
+        }
+        else
+        {
+            UserName = "Invitado";
+        }
+    }
+}

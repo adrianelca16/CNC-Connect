@@ -1,0 +1,39 @@
+﻿
+<MudContainer Style="margin-top:50px;">
+    <div Class="container-whatsapp">
+        <div class="variables-container">
+            <MudText Typo="Typo.h6">Variables</MudText>
+            <div class="variables">
+                <MudSelect @bind-Value="_value" Clearable="true" Variant="Variant.Outlined">
+                    @foreach (var variables in _variables)
+                    {
+                        <MudSelectItem Value="variables">@variables</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.AddCircle" Style="heigth: 40px">Agregar</MudButton>
+            </div>
+        </div>
+        <div class="mensaje-container">
+            <MudButton StartIcon="@Icons.Material.Filled.PermContactCalendar" Size="Size.Large" IconSize="Size.Large" Style="width: max-content">Destinatarios</MudButton>
+
+            <MudTextField T="string" Label="Mensaje" Variant="Variant.Outlined" Lines="5"/>
+
+            <div class="buton-container">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Send" Style="height: 40px">Enviar</MudButton>
+
+                <MudButton Variant="Variant.Filled" Color="Color.Error" Style="height: 40px">Volver</MudButton>
+
+                <div>
+                    <MudIconButton Icon="@Icons.Material.Filled.AddPhotoAlternate" Size="Size.Large"/>
+                    <MudIconButton Icon="@Icons.Material.Filled.AddLink" Size="Size.Large" />
+                </div>
+            </div>
+        </div>
+    </div>
+</MudContainer>
+@code {
+    string _value;
+    private string[] _variables = [
+    "Nombre Completo", "Primer Nombre", "Segundo Nombre", "Primer Apellido", "Segundo Apellido", "Nombres", "Apellidos", "Fecha de Nacimiento", "Edad", "Sexo"
+    ];
+}

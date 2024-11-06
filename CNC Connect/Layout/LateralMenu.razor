@@ -1,47 +1,24 @@
 ﻿@inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager NavigationManager
 
-<div class="LateralMenu">
-    <ul class="menu">
-        <li class="menu-item">
-            <i class="fa-solid fa-envelope"></i>
-            <a href="#">Correo</a>
-            <ul class="submenu-container">
-                <li>
-                    <a href="#">Redactar</a>
-                </li>
-                <li>
-                    <a href="#">Enviados</a>
-                </li>
-            </ul>
-        </li>
-        <li class="menu-item">
-            <i class="fa-solid fa-message"></i>
-            <a href="#">Mensajes</a>
-            <ul class="submenu-container">
-                <li>
-                    <a href="#">Redactar</a>
-                </li>
-                <li>
-                    <a href="#">Enviados</a>
-                </li>
-            </ul>
-        </li>
-        <li class="menu-item" @onclick="goToMeta">
-               <i class="fa-solid fa-layer-group"></i>
-            <a>Meta</a>
-        </li>
-    </ul>
-</div>
+<MudPaper Width="250px" Elevation="0" Class="py-3 LateralMenu">
+    <MudNavMenu Color="Color.Primary" Bordered="true" Style="font-size:1.3em">
+        <MudNavGroup Icon="@Icons.Material.Filled.Mail" Title="Correo">
+            <MudNavLink Href="/Email/Create" >Redactar</MudNavLink>
+            <MudNavLink Href="/Email/Send">Enviados</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Mensajes" Icon="@Icons.Material.Filled.Sms">
+            <MudNavLink Href="/Message/Create">Redactar</MudNavLink>
+            <MudNavLink Href="/Message/Send">Enviados</MudNavLink>
+        </MudNavGroup>
+        <MudNavLink Href="/Meta" Icon="@Icons.Material.Filled.AllInclusive">Meta</MudNavLink>
+    </MudNavMenu>
+</MudPaper>
+
 
 
 @code {
     private string UserName { get; set; } = null!;
-
-    private void goToMeta()
-    {
-        NavigationManager.NavigateTo("Meta");
-    }
 
     protected override async Task OnInitializedAsync()
     {

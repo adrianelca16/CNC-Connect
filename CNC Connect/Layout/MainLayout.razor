@@ -21,6 +21,7 @@
     <main>
         @Body
     </main>
+    <MudPopoverProvider />
 </MudLayout>
 
 @code{
@@ -30,10 +31,9 @@
         {
             PaletteLight = new PaletteLight()
             {
-                Secondary = Colors.Red.Lighten1, // Color primario
-                Primary = Colors.Teal.Lighten1, // Color secundario
-                                     // Tertiary = "rgba(120, 220, 255,1)"
-            }
+                Secondary = Colors.LightBlue.Darken4,
+                Primary = Colors.Teal.Lighten1,
+            },
         };
 
     private RenderFragment RedirectToLogin() => builder =>

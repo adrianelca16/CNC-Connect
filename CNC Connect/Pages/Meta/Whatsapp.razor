@@ -3,25 +3,25 @@
 
 <MudContainer Class="container-body">
     <MudContainer Class="container-items">
-        <div class="items-btn whatsapp">
-            <i class="fa-brands fa-whatsapp"></i>
+        <div class="items-btn whatsapp @((ventanaActiva == "whatsapp") ? "whatsapp-active" : "")" @onclick="@(() => onVentanaActiva("whatsapp"))">
+            <i class="fa-brands fa-whatsapp "></i>
             <p>Whatsapp</p>
         </div>
 
-        <div class="items-btn instagram">
+        <div class="items-btn instagram @((ventanaActiva == "instagram") ? "instagram-active" : "")" @onclick="@(() => onVentanaActiva("instagram"))">
             <i class="fa-brands fa-instagram"></i>
             <p>Instagram</p>
         </div>
 
-        <div class="items-btn facebook">
+        <div class="items-btn facebook @((ventanaActiva == "facebook") ? "facebook-active" : "")" @onclick="@(() => onVentanaActiva("facebook"))">
             <i class="fa-brands fa-facebook"></i>
             <p>Facebook</p>
         </div>
-    </MudContainer>
+    </MudContainer >
 
     @if (mensaje)
     {
-        <WhatsappCreate/>
+        <WhatsappCreate OnVolver="crearMensaje" />
     }
     else
     {
@@ -31,7 +31,7 @@
                 <MudSpacer />
                 <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                 <MudSpacer />
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Add" OnClick="crearMensaje">Nuevo mensaje</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Add" OnClick="crearMensaje" Size="Size.Small">Nuevo mensaje</MudButton>
             </ToolBarContent>
             <HeaderContent>
                 <MudTh>Nr</MudTh>
@@ -56,6 +56,8 @@
 
 @code {
     private bool mensaje = false;
+
+    string ventanaActiva = "whatsapp";
 
     private string searchString1 = "";
     private Element selectedItem1 = null;
@@ -99,9 +101,13 @@
         public double Molar { get; set; }
     }
 
+    private void onVentanaActiva(string ventana)
+    {
+        ventanaActiva = ventana;
+    }
 
     private void crearMensaje()
     {
-        mensaje = true;
+        mensaje = !mensaje;
     }
 }

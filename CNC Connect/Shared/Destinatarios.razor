@@ -1,0 +1,106 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">Agregar Filtros</MudText>
+
+        <div class="dialog-container">
+            <div style="width:100%">
+                <MudSelect @bind-Value="SelectedFilter" Label="Seleccione un filtro" Margin="Margin.Dense" Variant="Variant.Outlined">
+                    <MudSelectItem Value="@("Sexo")">Sexo</MudSelectItem>
+                    <MudSelectItem Value="@("Fecha de Nacimiento")">Fecha de Nacimiento</MudSelectItem>
+                    <MudSelectItem Value="@("Edad")">Edad</MudSelectItem>
+                </MudSelect>
+            </div>
+
+            @if (SelectedFilter == "Sexo")
+            {
+                <div style="width:100%">
+                    <MudSelect T="string" @bind-Value="SelectedSexo" Label="Sexo" Margin="Margin.Dense" Variant="Variant.Outlined">
+                        <MudSelectItem Value="@("Masculino")">Masculino</MudSelectItem>
+                        <MudSelectItem Value="@("Femenino")">Femenino</MudSelectItem>
+                    </MudSelect>
+                </div>
+            }
+            else if (SelectedFilter == "Fecha de Nacimiento")
+            {
+                <div style="width:100%">
+                    <MudDatePicker @bind-Date="FechaInicio" Label="Fecha de inicio" Margin="Margin.Dense" Variant="Variant.Outlined" />
+                </div>
+                <div style="width:100%">
+                    <MudDatePicker @bind-Date="FechaFin" Label="Fecha de fin" Margin="Margin.Dense" Variant="Variant.Outlined" />
+                </div>
+            }
+            else if (SelectedFilter == "Edad")
+            {
+                <div style="width:100%">
+                    <MudNumericField HideSpinButtons="true" @bind-Value="edadInicio" Label="Edad Inicio" Variant="Variant.Text" Min="0" Max="100" />
+                </div>
+                <div style="width:100%">
+                    <MudNumericField HideSpinButtons="true" @bind-Value="edadFin" Label="Edad Fin" Variant="Variant.Text" Min="edadInicio" Max="100" />
+                </div>
+            }
+
+            <div style="height: auto;">
+                <MudButton OnClick="AgregarFiltro" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small">Agregar</MudButton>
+            </div>
+        </div>
+
+        <MudText Typo="Typo.h6" Class="mt-4">Filtros Aplicados</MudText>
+
+        <div class="filtro-container">
+            @foreach (var filtro in FiltrosAplicados)
+            {
+                <MudChip T="string" Size="Size.Large" Color="Color.Primary" OnClose="() => OnFiltroEliminado(filtro)">@filtro</MudChip>
+            }
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="CerrarDialogo">Cerrar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+    [Parameter] public List<string> FiltrosAplicados { get; set; }
+    [Parameter] public EventCallback<string> FiltroEliminado { get; set; } // Nuevo callback para notificar al componente principal
+    [Parameter] public EventCallback<string> FiltroAgregado { get; set; }
+
+    private string SelectedFilter;
+    private string SelectedSexo;
+    private DateTime? FechaInicio;
+    private DateTime? FechaFin;
+    private int edadInicio;
+    private int edadFin;
+
+    private void OnFiltroEliminado(string filtro)
+    {
+        FiltrosAplicados.Remove(filtro);
+        FiltroEliminado.InvokeAsync(filtro); // Notifica al componente principal
+    }
+
+    private void AgregarFiltro()
+    {
+        if (SelectedFilter == "Sexo" && !string.IsNullOrEmpty(SelectedSexo))
+        {
+            FiltroAgregado.InvokeAsync($"Sexo={SelectedSexo}");
+
+        }
+        else if (SelectedFilter == "Fecha de Nacimiento" && FechaInicio.HasValue && FechaFin.HasValue)
+        {
+            FiltroAgregado.InvokeAsync($"Fecha_de_Nacimiento: {FechaInicio.Value.ToShortDateString()} between {FechaFin.Value.ToShortDateString()}");
+        }
+        else if (SelectedFilter == "Edad" && edadInicio != 0 && edadFin != 0)
+        {
+            FiltroAgregado.InvokeAsync($"Edad: {edadInicio} - {edadFin}");
+        }
+
+        // Limpiar selección después de agregar
+        SelectedFilter = null;
+        SelectedSexo = null;
+        FechaInicio = null;
+        FechaFin = null;
+        edadInicio = 0;
+        edadFin = 0;
+    }
+
+    private void CerrarDialogo() => MudDialog.Close();
+}

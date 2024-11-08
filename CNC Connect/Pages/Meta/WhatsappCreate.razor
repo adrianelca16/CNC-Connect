@@ -1,6 +1,9 @@
-﻿
+﻿@inject IDialogService DialogService
+@using CNC_Connect.Shared
+@inject WhatsAppService WhatsAppService
+
 <MudContainer Style="margin-top:10px;">
-    <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Style="margin-bottom:15px">Volver</MudButton>
+    <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Style="margin-bottom:15px" OnClick="OnVolver">Volver</MudButton>
     <div Class="container-whatsapp">
         <div class="variables-container">
             <MudText Typo="Typo.h6">Variables</MudText>
@@ -12,19 +15,22 @@
                     }
                 </MudSelect>
                 <div Style="height: auto;">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.AddCircle" IconSize="Size.Small" Size="Size.Small">Agregar</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.AddCircle" IconSize="Size.Small" Size="Size.Small" OnClick="AgregarVariable">Agregar</MudButton>
                 </div>
                 
             </div>
         </div>
         <div class="mensaje-container">
-            <MudButton StartIcon="@Icons.Material.Filled.PermContactCalendar" Size="Size.Large" IconSize="Size.Large" Style="width: max-content">Destinatarios</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.PermContactCalendar" Size="Size.Large" IconSize="Size.Large" Style="width: max-content" OnClick="OpenDialogAsync">Destinatarios</MudButton>
 
-            <MudTextField T="string" Label="Mensaje" Variant="Variant.Outlined" Lines="5"/>
+            <MudTextField T="string" Label="Para:" @bind-Value=Clientes ReadOnly="true" Variant="Variant.Outlined" Lines="1" />
+
+            <MudTextField T="string" Label="Mensaje:" Variant="Variant.Outlined" @bind-Value="mensaje" Lines="5"/>
 
             <div class="buton-container">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Send" Style="height: 40px">Enviar</MudButton>
-
+                <div style="height:auto">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Send" Size="Size.Small" OnClick="SendMessage">Enviar</MudButton>
+                </div>
 
                 <div>
                     <MudIconButton Icon="@Icons.Material.Filled.AddPhotoAlternate" Size="Size.Large"/>
@@ -35,8 +41,49 @@
     </div>
 </MudContainer>
 @code {
+    [Parameter]
+    public EventCallback OnVolver { get; set; }
+
+    private List<string> FiltrosAplicados = new List<string>();
+
+    public string Clientes { get; set; } = "Adrian, Miguel, El negrito, Kedwin";
+
     string _value;
+
+    private string mensaje;
     private string[] _variables = [
-    "Nombre Completo", "Primer Nombre", "Segundo Nombre", "Primer Apellido", "Segundo Apellido", "Nombres", "Apellidos", "Fecha de Nacimiento", "Edad", "Sexo"
+    "Nombre Completo", "Nombres", "Apellidos", "Fecha de Nacimiento", "Edad", "Sexo"
     ];
+
+    private async Task OpenDialogAsync()
+    {
+        var parameters = new DialogParameters { { "FiltrosAplicados", FiltrosAplicados }, { "FiltroEliminado", EventCallback.Factory.Create<string>(this, OnFiltroEliminado) }, { "FiltroAgregado", EventCallback.Factory.Create<string>(this, OnFiltroAgregado) } };
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, Position = DialogPosition.TopCenter };
+
+        await DialogService.ShowAsync<Destinatarios>("Filtros de los clientes", parameters, options);
+    }
+    private void OnFiltroEliminado(string filtro)
+    {
+        FiltrosAplicados.Remove(filtro);
+        StateHasChanged(); // Refresca la UI
+    }
+    private void OnFiltroAgregado(string filtro)
+    {
+        FiltrosAplicados.Add(filtro);
+        StateHasChanged(); // Refresca la UI
+    }
+    private void AgregarVariable()
+    {
+        mensaje += "{"+ _value + "}";
+    }
+
+    private async Task SendMessage()
+    {
+
+        var sendSuccess = await WhatsAppService.SendMessageAsync("584125574668", mensaje);
+
+        Console.Write(sendSuccess);
+
+        
+    }
 }

@@ -15,9 +15,17 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7280/") });
 
+builder.Services.AddHttpClient("WhatsAppClient", client =>
+{
+    client.BaseAddress = new Uri("http://localhost:3002/");
+});
+
+
 builder.Services.AddMudServices();
 
 builder.Services.AddScoped<IRepository, Repository>();
+builder.Services.AddScoped<WhatsAppService>();
+
 builder.Services.AddSweetAlert2();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationProviderJWT>();

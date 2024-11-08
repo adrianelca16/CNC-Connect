@@ -7,6 +7,7 @@
     <div Class="container-whatsapp">
         <div class="variables-container">
             <MudText Typo="Typo.h6">Variables</MudText>
+
             <div class="variables">
                 <MudSelect @bind-Value="_value" Clearable="true" Variant="Variant.Outlined" Margin="Margin.Dense">
                     @foreach (var variables in _variables)
@@ -14,10 +15,10 @@
                         <MudSelectItem Value="variables">@variables</MudSelectItem>
                     }
                 </MudSelect>
+
                 <div Style="height: auto;">
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.AddCircle" IconSize="Size.Small" Size="Size.Small" OnClick="AgregarVariable">Agregar</MudButton>
                 </div>
-                
             </div>
         </div>
         <div class="mensaje-container">
@@ -62,16 +63,19 @@
 
         await DialogService.ShowAsync<Destinatarios>("Filtros de los clientes", parameters, options);
     }
+
     private void OnFiltroEliminado(string filtro)
     {
         FiltrosAplicados.Remove(filtro);
         StateHasChanged(); // Refresca la UI
     }
+
     private void OnFiltroAgregado(string filtro)
     {
         FiltrosAplicados.Add(filtro);
         StateHasChanged(); // Refresca la UI
     }
+
     private void AgregarVariable()
     {
         mensaje += "{"+ _value + "}";
@@ -79,11 +83,6 @@
 
     private async Task SendMessage()
     {
-
         var sendSuccess = await WhatsAppService.SendMessageAsync("584125574668", mensaje);
-
-        Console.Write(sendSuccess);
-
-        
     }
 }

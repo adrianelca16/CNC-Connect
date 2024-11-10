@@ -15,9 +15,25 @@ namespace CNC_shared.Data
         {
         }
 
+        public DbSet<Clientes> Clientes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Clientes>().HasIndex(x => x.Documento).IsUnique(true);
+
+
+            modelBuilder.Entity<Clientes>(entity =>
+            {
+                entity.HasKey(e => e.Documento);
+
+                entity.Property(e => e.Documento)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            });
+
         }
     }
 }

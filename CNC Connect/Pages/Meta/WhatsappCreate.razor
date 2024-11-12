@@ -1,6 +1,7 @@
 ﻿@inject IDialogService DialogService
 @using CNC_Connect.Shared
 @inject WhatsAppService WhatsAppService
+@inject IRepository repository
 
 <MudContainer Style="margin-top:10px;">
     <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Style="margin-bottom:15px" OnClick="OnVolver">Volver</MudButton>
@@ -45,23 +46,90 @@
     [Parameter]
     public EventCallback OnVolver { get; set; }
 
+    public List<Customers>? Customers { get; set; }
+
+    public List<Customers>? FilteredCustomers { get; set; }
+
     private List<string> FiltrosAplicados = new List<string>();
 
-    public string Clientes { get; set; } = "Adrian, Miguel, El negrito, Kedwin";
+    public string? Clientes { get; set; }
 
     string _value;
 
     private string mensaje;
     private string[] _variables = [
-    "Nombre Completo", "Nombres", "Apellidos", "Fecha de Nacimiento", "Edad", "Sexo"
+    "Nombre Completo", "Nombres", "Apellidos", "Fecha de Nacimiento", "Sexo"
     ];
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        var responseHppt = await repository.Get<List<Customers>>("api/Customers");
+        Customers = responseHppt.Response!;
+        Clientes = string.Join(", ", Customers.Select(c => c.FirstName));
+        FilteredCustomers = Customers; 
+    }
 
     private async Task OpenDialogAsync()
     {
         var parameters = new DialogParameters { { "FiltrosAplicados", FiltrosAplicados }, { "FiltroEliminado", EventCallback.Factory.Create<string>(this, OnFiltroEliminado) }, { "FiltroAgregado", EventCallback.Factory.Create<string>(this, OnFiltroAgregado) } };
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, Position = DialogPosition.TopCenter };
 
-        await DialogService.ShowAsync<Destinatarios>("Filtros de los clientes", parameters, options);
+        var dialogReference = await DialogService.ShowAsync<Destinatarios>("Filtros de los clientes", parameters, options);
+
+        //Filtro de los clientes
+
+        dialogReference?.Result.ContinueWith(result =>
+       {
+           if (result.Result?.Canceled == false) // Opcional: verifica si el diálogo fue cancelado
+           {
+               InvokeAsync(onFiltro); // Ejecuta onFiltro en el contexto de Blazor
+           }
+       });
+    }
+
+    private async Task onFiltro()
+    {
+        if (Customers == null) return;
+
+        // Crear una lista temporal para almacenar los clientes filtrados
+        var filteredList = Customers.AsQueryable();
+
+        // Aplicar cada filtro en `FiltrosAplicados`
+        foreach (var filtro in FiltrosAplicados)
+        {
+            var parts = filtro.Split('=');
+            if (parts.Length < 2) continue;
+
+            var propiedad = parts[0];
+            var valor = parts[1];
+
+            var fechaDesde = DateTime.Now;
+            var fechaHasta = DateTime.Now;
+
+            if (propiedad == "Fecha_de_Nacimiento")
+            {
+                var partsFecha = valor.Split('a');
+                fechaDesde = DateTime.Parse(partsFecha[0]);
+                fechaHasta = DateTime.Parse(partsFecha[1]);
+            }
+
+            // Filtrar según el nombre de la propiedad
+            filteredList = propiedad switch
+            {
+                "Sexo" => filteredList.Where(c => c.Sex == valor),
+                "Fecha_de_Nacimiento" => filteredList.Where(c => c.Birthdate >= fechaDesde && c.Birthdate <= fechaHasta),
+                // "Edad" => filteredList.Where(c => c.Age.ToString() == valor),
+                // Agrega más condiciones aquí según las propiedades que deseas filtrar
+                _ => filteredList
+            };
+        }
+
+        // Asignar la lista filtrada a FilteredCustomers para mostrarla en la UI
+        FilteredCustomers = filteredList.ToList();
+
+        Clientes = string.Join(", ", FilteredCustomers.Select(c => c.FirstName));
+        StateHasChanged();
     }
 
     private void OnFiltroEliminado(string filtro)
@@ -83,6 +151,28 @@
 
     private async Task SendMessage()
     {
-        var sendSuccess = await WhatsAppService.SendMessageAsync("584125574668", mensaje);
+        foreach (var customer in FilteredCustomers!)
+        {
+            var mensajePersonalizado = mensaje;
+
+            mensajePersonalizado = mensajePersonalizado.Replace("{Nombre Completo}", $"{customer.FirstName} {customer.LastNames}");
+            mensajePersonalizado = mensajePersonalizado.Replace("{Nombres}", customer.FirstName);
+            mensajePersonalizado = mensajePersonalizado.Replace("{Apellidos}", customer.LastNames);
+            mensajePersonalizado = mensajePersonalizado.Replace("{Fecha de Nacimiento}", customer.Birthdate.ToString("dd/MM/yyyy"));
+            mensajePersonalizado = mensajePersonalizado.Replace("{Sexo}", customer.Sex);
+
+
+            var telefonoCorrecto = customer.Phone;
+
+            if (telefonoCorrecto.StartsWith("0"))
+            {
+                telefonoCorrecto = "58" + telefonoCorrecto.Substring(1);
+            }
+
+            if(telefonoCorrecto.Length >= 10 && (mensajePersonalizado != null || mensajePersonalizado != ""))
+            {
+                var sendSuccess = await WhatsAppService.SendMessageAsync(telefonoCorrecto, mensajePersonalizado!);
+            }
+        }
     }
 }

@@ -29,7 +29,7 @@
                     <MudDatePicker @bind-Date="FechaFin" Label="Fecha de fin" Margin="Margin.Dense" Variant="Variant.Outlined" />
                 </div>
             }
-            else if (SelectedFilter == "Edad")
+           @*  else if (SelectedFilter == "Edad")
             {
                 <div style="width:100%">
                     <MudNumericField HideSpinButtons="true" @bind-Value="edadInicio" Label="Edad Inicio" Variant="Variant.Text" Min="0" Max="100" />
@@ -37,7 +37,7 @@
                 <div style="width:100%">
                     <MudNumericField HideSpinButtons="true" @bind-Value="edadFin" Label="Edad Fin" Variant="Variant.Text" Min="edadInicio" Max="100" />
                 </div>
-            }
+            } *@
 
             <div style="height: auto;">
                 <MudButton OnClick="AgregarFiltro" Color="Color.Primary" Variant="Variant.Filled" Size="Size.Small">Agregar</MudButton>
@@ -68,8 +68,8 @@
     private string SelectedSexo;
     private DateTime? FechaInicio;
     private DateTime? FechaFin;
-    private int edadInicio;
-    private int edadFin;
+    // private int edadInicio;
+    // private int edadFin;
 
     private void OnFiltroEliminado(string filtro)
     {
@@ -86,20 +86,20 @@
         }
         else if (SelectedFilter == "Fecha de Nacimiento" && FechaInicio.HasValue && FechaFin.HasValue)
         {
-            FiltroAgregado.InvokeAsync($"Fecha_de_Nacimiento: {FechaInicio.Value.ToShortDateString()} between {FechaFin.Value.ToShortDateString()}");
+            FiltroAgregado.InvokeAsync($"Fecha_de_Nacimiento={FechaInicio.Value.ToShortDateString()} a{FechaFin.Value.ToShortDateString()}");
         }
-        else if (SelectedFilter == "Edad" && edadInicio != 0 && edadFin != 0)
-        {
-            FiltroAgregado.InvokeAsync($"Edad: {edadInicio} - {edadFin}");
-        }
+        // else if (SelectedFilter == "Edad" && edadInicio != 0 && edadFin != 0)
+        // {
+        //     FiltroAgregado.InvokeAsync($"Edad: {edadInicio} - {edadFin}");
+        // }
 
         // Limpiar selección después de agregar
         SelectedFilter = null;
         SelectedSexo = null;
         FechaInicio = null;
-        FechaFin = null;
-        edadInicio = 0;
-        edadFin = 0;
+        // FechaFin = null;
+        // edadInicio = 0;
+        // edadFin = 0;
     }
 
     private void CerrarDialogo() => MudDialog.Close();

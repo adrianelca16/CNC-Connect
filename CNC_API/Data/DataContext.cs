@@ -13,11 +13,16 @@ namespace CNC_shared.Data
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
+            
         }
+
+        public DbSet<Customers> customers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Customers>().HasIndex(x => x.CI).IsUnique();
         }
     }
 }

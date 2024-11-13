@@ -68,8 +68,8 @@
     private string SelectedSexo;
     private DateTime? FechaInicio;
     private DateTime? FechaFin;
-    // private int edadInicio;
-    // private int edadFin;
+    private int edadInicio;
+    private int edadFin;
 
     private void OnFiltroEliminado(string filtro)
     {
@@ -88,18 +88,18 @@
         {
             FiltroAgregado.InvokeAsync($"Fecha_de_Nacimiento={FechaInicio.Value.ToShortDateString()} a{FechaFin.Value.ToShortDateString()}");
         }
-        // else if (SelectedFilter == "Edad" && edadInicio != 0 && edadFin != 0)
-        // {
-        //     FiltroAgregado.InvokeAsync($"Edad: {edadInicio} - {edadFin}");
-        // }
+        else if (SelectedFilter == "Edad" && edadInicio != 0 && edadFin != 0)
+        {
+            FiltroAgregado.InvokeAsync($"Edad: {edadInicio} - {edadFin}");
+        }
 
         // Limpiar selección después de agregar
         SelectedFilter = null;
         SelectedSexo = null;
         FechaInicio = null;
-        // FechaFin = null;
-        // edadInicio = 0;
-        // edadFin = 0;
+        FechaFin = null;
+        edadInicio = 0;
+        edadFin = 0;
     }
 
     private void CerrarDialogo() => MudDialog.Close();

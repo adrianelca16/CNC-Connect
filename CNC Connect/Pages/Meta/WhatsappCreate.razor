@@ -172,6 +172,9 @@
             if(telefonoCorrecto.Length >= 10 && (mensajePersonalizado != null || mensajePersonalizado != ""))
             {
                 var sendSuccess = await WhatsAppService.SendMessageAsync(telefonoCorrecto, mensajePersonalizado!);
+                mensaje = "";
+                _value = "";
+                FilteredCustomers = null;
             }
         }
     }

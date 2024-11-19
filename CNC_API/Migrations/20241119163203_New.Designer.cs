@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CNC_API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241118160229_New")]
+    [Migration("20241119163203_New")]
     partial class New
     {
         /// <inheritdoc />
@@ -33,8 +33,8 @@ namespace CNC_API.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("Birthdate")
                         .HasColumnType("datetime2");

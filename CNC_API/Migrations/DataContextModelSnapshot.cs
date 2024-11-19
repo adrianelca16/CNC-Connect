@@ -30,8 +30,8 @@ namespace CNC_API.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("Birthdate")
                         .HasColumnType("datetime2");

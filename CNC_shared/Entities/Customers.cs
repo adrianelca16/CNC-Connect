@@ -38,7 +38,7 @@ namespace CNC_shared.Entities
         public string Sex { get; set; } = null!;
 
         [Display(Name = "Direccion")]
-        [MaxLength(50, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
+        [MaxLength(500, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Address { get; set; } = null!;
 

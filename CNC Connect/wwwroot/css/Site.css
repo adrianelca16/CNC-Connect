@@ -43,6 +43,7 @@ p{
     .navbar-user-container:hover .navbar-user-submenu-container{
         display: flex;
     }
+
 .navbar-user-submenu-container {
     display: none;
     position: absolute;
@@ -92,9 +93,6 @@ p{
 .navbar-user i{
     font-size:1.5em;
 }
-
-
-
 
 /*Login*/
 .Login {
@@ -398,6 +396,7 @@ input[type=number] {
 }
 
 /*Estilo de tabla */
+
 .contenedorTabla {
     display: flex;
     width: 100%;
@@ -427,6 +426,7 @@ input[type=number] {
     }
 
 /* Carta de detalle */
+
 .blur-overlay {
     position: fixed;
     top: 0;

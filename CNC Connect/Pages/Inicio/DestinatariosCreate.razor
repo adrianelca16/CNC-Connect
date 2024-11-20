@@ -5,22 +5,55 @@
 
 
 <MudContainer Class="container-body">
-    <MudContainer Class="">
-        <h3>DESTINATARIOS</h3>
+    <h3>DESTINATARIOS</h3>
+    <MudContainer Style="display: flex; align-items: center; gap: 15px">
+        @* <InputFile OnChange="seleccionarArchivo" /> *@
 
-        <InputFile OnChange="seleccionarArchivo" />
+        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" OnFilesChanged="seleccionarArchivo">
+            <ActivatorContent>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ContentPasteSearch" Size="Size.Small">Buscar Excel</MudButton>
+            </ActivatorContent>
+        </MudFileUpload>
+        @if (_files != null)
+        {
+            <MudList T="string">
+                @foreach (var file in _files)
+                {
+                    <MudListItem Icon="@Icons.Material.Filled.AttachFile" @key="@file">@file.Name 
+                        @* <code>@file.Size bytes</code> *@
+                    </MudListItem>
+                }
+            </MudList>
+        }
 
         @if(ListCustomers?.Count > 0) {
-            <MudFab StartIcon="@Icons.Material.Filled.Save" Size="Size.Small" OnClick="(()=> CreateAsync())" Label="Subir Excel" />
+            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" Size="Size.Small" OnClick="(()=> CreateAsync())" Label="Subir" />
+        }
+
+    </MudContainer>
+    <MudContainer>
+        @if (customersDuplicados?.Count > 0)
+        {
+            @* <MudIconButton Icon="@Icons.Material.Rounded.RemoveRedEye" Size="Size.Small" Color="Color.Tertiary" OnClick="@(() => verOtros(customersDuplicados,"Duplicados."))">Registros Duplicados</MudIconButton> *@
+            <MudButton OnClick="@(() => verOtros(customersDuplicados,"Duplicados."))" Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.RemoveRedEye" Size="Size.Small" Color="Color.Primary" Style="text-transform:none">Registros Duplicados</MudButton>
+        }
+        @if (customersInvalidos?.Count > 0)
+        {
+            <MudButton OnClick="@(() => verOtros(customersInvalidos,"Invalidos."))" Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.RemoveRedEye" Size="Size.Small" Color="Color.Error" Style="text-transform:none">Registros Invalidos</MudButton>
         }
     </MudContainer>
-    <MudSpacer></MudSpacer>
-    <MudContainer Class="">
+    <br />
+    <MudContainer>
         @if (ListCustomers?.Count > 0)
         {
-
+            
             <div class="table" style="border: none;">
                 <MudTable Style="border: none;" HeaderClass="headerTabla" RowClass="rowTabla" Items="ListCustomers" Dense="true" Striped="true" Hover="true" SortLabel="Sort By">
+                    <ToolBarContent>
+                        <div class="contenedorTabla">
+                            <MudText Typo="Typo.h6">Vista Previa</MudText>
+                        </div>
+                    </ToolBarContent>
                     <HeaderContent>
                         <MudTh Style="color: white;">NOMBRE</MudTh>
                         <MudTh Style="color: white;">APELLIDO</MudTh>
@@ -40,42 +73,58 @@
                         <MudTd>@customer.Email</MudTd>
                         <MudTd>@customer.Address</MudTd>
                         <MudTd>@customer.Birthdate</MudTd>
-
                     </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager Style="border: none;" HorizontalAlignment="MudBlazor.HorizontalAlignment.Center" RowsPerPageString=" " InfoFormat="{first_item}-{last_item} de {all_items}" />
+                    </PagerContent>
                 </MudTable>
             </div>
         }
     </MudContainer>
 
-    <MudContainer Class="">
-        @if (mostrar)
-        {
+    @if (mostrar)
+    {
 
-            <div class="blur-overlay" @onclick="ocultar"></div>
+        <div class="blur-overlay" @onclick="ocultar"></div>
 
-            <div class="cartaDetalle">
-                <div class="contenedorTabla" style="justify-content: end; padding-bottom: 10px;">
-                    <MudIconButton Icon="@Icons.Material.Rounded.Close" Color="Color.Error" OnClick="ocultar" Size="Size.Small" />
-                </div>
-
-                <TablaDestinatarios Duplicados="customersDuplicados" Invalidos="customersInvalidos" />
-
-
+        <div class="cartaDetalle">
+            <div class="contenedorTabla" style="justify-content: end; padding-bottom: 10px;">
+                <MudIconButton Icon="@Icons.Material.Rounded.Close" Color="Color.Error" OnClick="ocultar" Size="Size.Small" />
             </div>
 
-        }
-    </MudContainer>    
+            <TablaDestinatarios lista="@verList" title="@titulo"/>
+        </div>
+
+    }
+
 </MudContainer>
 
 
 @code {
+
+    IList<IBrowserFile> _files = new List<IBrowserFile>();
+    private void UploadFiles(IBrowserFile file)
+    {
+        _files.Add(file);
+        //TODO upload the files to the server
+    }
+
     private bool mostrar = false;
+    private string titulo = "";
 
     private Customers customers = new();
     private List<Customers>? ListCustomers = new();
 
     private List<Customers>? customersDuplicados = new();
     private List<Customers>? customersInvalidos = new();
+    private List<Customers>? verList = new();
+
+    private void verOtros(List<Customers>? list, string title)
+    {
+        mostrar = true;
+        verList = list;
+        titulo = title;
+    }
 
     private void ocultar()
     {
@@ -182,17 +231,19 @@
                     {
                         customersInvalidos?.Add(customer); // Agrega los registros con errores de formato
                     }
-                    return;
+                    //return;
                 }
             }
 
             // Mostrar la tabla con registros problemáticos si existen
             if (customersDuplicados.Any() || customersInvalidos.Any())
             {
-                mostrar = true;
+                DialogService.Show<MessageBox>("Advertencia", new DialogParameters { { "Icon", "warning" }, { "Message", "Proceso finalizado. Tiene registros duplicados y/o invalidos." } });               
             }
-
-            DialogService.Show<MessageBox>("Informacion", new DialogParameters { { "Icon", "info" }, { "Message", "Proceso finalizado con exito." } });
+            else
+            {
+                DialogService.Show<MessageBox>("Informacion", new DialogParameters { { "Icon", "success" }, { "Message", "Proceso finalizado con exito." } });
+            }
 
         }
        

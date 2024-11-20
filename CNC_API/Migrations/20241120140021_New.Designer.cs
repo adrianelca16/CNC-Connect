@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CNC_API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241119163203_New")]
+    [Migration("20241120140021_New")]
     partial class New
     {
         /// <inheritdoc />

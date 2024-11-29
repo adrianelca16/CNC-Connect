@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CNC_API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241112153546_addPhoneAndMail")]
-    partial class addPhoneAndMail
+    [Migration("20241118160229_New")]
+    partial class New
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

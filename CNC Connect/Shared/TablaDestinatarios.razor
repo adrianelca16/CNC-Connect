@@ -2,18 +2,29 @@
     <MudTable Style="border: none;" HeaderClass="headerTabla" RowClass="rowTabla" Items="lista" Dense="true" Striped="true" Hover="true" SortLabel="Sort By">
         <ToolBarContent>
             <div class="contenedorTabla">
-                <MudText Typo="Typo.h6">Destinatarios @title</MudText>
+                <MudText Typo="Typo.h6">@title</MudText>
             </div>
         </ToolBarContent>
         <HeaderContent>
             <MudTh Style="color: white;">NOMBRE</MudTh>
             <MudTh Style="color: white;">APELLIDO</MudTh>
             <MudTh Style="color: white;">CEDULA</MudTh>
+            <MudTh Style="color: white;">SEXO</MudTh>
+            <MudTh Style="color: white;">TELEFONO</MudTh>
+            <MudTh Style="color: white;">CORREO</MudTh>
+            <MudTh Style="color: white;">DIRECCION</MudTh>
+            <MudTh Style="color: white;">FECHA DE NACIMIENTO</MudTh>
         </HeaderContent>
         <RowTemplate Context="customer">
             <MudTd>@customer.FirstName</MudTd>
             <MudTd>@customer.LastNames</MudTd>
             <MudTd>@customer.CI</MudTd>
+            <MudTd>@customer.Sex</MudTd>
+            <MudTd>@customer.Phone</MudTd>
+            <MudTd>@customer.Email</MudTd>
+            <MudTd>@customer.Address</MudTd>
+            <MudTd>@customer.Birthdate</MudTd>
+
         </RowTemplate>
         <PagerContent>
             <MudTablePager Style="border: none;" HorizontalAlignment="MudBlazor.HorizontalAlignment.Center" RowsPerPageString=" " InfoFormat="{first_item}-{last_item} de {all_items}" />

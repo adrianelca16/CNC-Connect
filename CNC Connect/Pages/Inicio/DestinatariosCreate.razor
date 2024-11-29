@@ -6,7 +6,7 @@
 
 <MudContainer Class="container-body">
     <h3>DESTINATARIOS</h3>
-    <MudContainer Style="display: flex; align-items: center; gap: 15px">
+    <MudContainer Style="display: flex; align-items: center; gap: 30px;">
         @* <InputFile OnChange="seleccionarArchivo" /> *@
 
         <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" OnFilesChanged="seleccionarArchivo">
@@ -31,58 +31,30 @@
         }
 
     </MudContainer>
-    <MudContainer>
+    <MudContainer Style="display: flex; align-items: center; gap: 30px;">
+        @if (ListCustomers?.Count > 0)
+        {
+            <MudButton OnClick="@(() => verOtros(ListCustomers,"Vista Previa."))" Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.RemoveRedEye" Size="Size.Small" Color="Color.Primary" Style="text-transform:none">Vista Previa</MudButton>
+        }
         @if (customersDuplicados?.Count > 0)
         {
             @* <MudIconButton Icon="@Icons.Material.Rounded.RemoveRedEye" Size="Size.Small" Color="Color.Tertiary" OnClick="@(() => verOtros(customersDuplicados,"Duplicados."))">Registros Duplicados</MudIconButton> *@
-            <MudButton OnClick="@(() => verOtros(customersDuplicados,"Duplicados."))" Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.RemoveRedEye" Size="Size.Small" Color="Color.Primary" Style="text-transform:none">Registros Duplicados</MudButton>
+            <MudButton OnClick="@(() => verOtros(customersDuplicados,"Destinatarios Duplicados."))" Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.RemoveRedEye" Size="Size.Small" Color="Color.Warning" Style="text-transform:none">Registros Duplicados</MudButton>
         }
         @if (customersInvalidos?.Count > 0)
         {
-            <MudButton OnClick="@(() => verOtros(customersInvalidos,"Invalidos."))" Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.RemoveRedEye" Size="Size.Small" Color="Color.Error" Style="text-transform:none">Registros Invalidos</MudButton>
+            <MudButton OnClick="@(() => verOtros(customersInvalidos,"Destinatarios Invalidos."))" Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.RemoveRedEye" Size="Size.Small" Color="Color.Error" Style="text-transform:none">Registros Invalidos</MudButton>
         }
     </MudContainer>
     <br />
     <MudContainer>
         @if (ListCustomers?.Count > 0)
         {
-            
-            <div class="table" style="border: none;">
-                <MudTable Style="border: none;" HeaderClass="headerTabla" RowClass="rowTabla" Items="ListCustomers" Dense="true" Striped="true" Hover="true" SortLabel="Sort By">
-                    <ToolBarContent>
-                        <div class="contenedorTabla">
-                            <MudText Typo="Typo.h6">Vista Previa</MudText>
-                        </div>
-                    </ToolBarContent>
-                    <HeaderContent>
-                        <MudTh Style="color: white;">NOMBRE</MudTh>
-                        <MudTh Style="color: white;">APELLIDO</MudTh>
-                        <MudTh Style="color: white;">CEDULA</MudTh>
-                        <MudTh Style="color: white;">SEXO</MudTh>
-                        <MudTh Style="color: white;">TELEFONO</MudTh>
-                        <MudTh Style="color: white;">CORREO</MudTh>
-                        <MudTh Style="color: white;">DIRECCION</MudTh>
-                        <MudTh Style="color: white;">FECHA DE NACIMIENTO</MudTh>
-                    </HeaderContent>
-                    <RowTemplate Context="customer">
-                        <MudTd>@customer.FirstName</MudTd>
-                        <MudTd>@customer.LastNames</MudTd>
-                        <MudTd>@customer.CI</MudTd>
-                        <MudTd>@customer.Sex</MudTd>
-                        <MudTd>@customer.Phone</MudTd>
-                        <MudTd>@customer.Email</MudTd>
-                        <MudTd>@customer.Address</MudTd>
-                        <MudTd>@customer.Birthdate</MudTd>
-                    </RowTemplate>
-                    <PagerContent>
-                        <MudTablePager Style="border: none;" HorizontalAlignment="MudBlazor.HorizontalAlignment.Center" RowsPerPageString=" " InfoFormat="{first_item}-{last_item} de {all_items}" />
-                    </PagerContent>
-                </MudTable>
-            </div>
+            <TablaDestinatarios lista="@verList" title="@titulo" />
         }
     </MudContainer>
 
-    @if (mostrar)
+@*     @if (mostrar)
     {
 
         <div class="blur-overlay" @onclick="ocultar"></div>
@@ -95,7 +67,7 @@
             <TablaDestinatarios lista="@verList" title="@titulo"/>
         </div>
 
-    }
+    } *@
 
 </MudContainer>
 
@@ -121,9 +93,13 @@
 
     private void verOtros(List<Customers>? list, string title)
     {
-        mostrar = true;
+        if(title != "Vista Previa.")
+        {
+            mostrar = true;
+        }
+        
         verList = list;
-        titulo = title;
+        titulo = title;        
     }
 
     private void ocultar()
@@ -194,8 +170,10 @@
 
         // Leer el archivo Excel
         ListCustomers = leerExcel(tempPath);
+        verOtros(ListCustomers,"Vista Previa.");
 
-        // Elimina el archivo temporal después de procesarlo
+
+    // Elimina el archivo temporal después de procesarlo
         if (File.Exists(tempPath))
         {
             File.Delete(tempPath);

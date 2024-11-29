@@ -43,6 +43,7 @@ p{
     .navbar-user-container:hover .navbar-user-submenu-container{
         display: flex;
     }
+
 .navbar-user-submenu-container {
     display: none;
     position: absolute;
@@ -92,9 +93,6 @@ p{
 .navbar-user i{
     font-size:1.5em;
 }
-
-
-
 
 /*Login*/
 .Login {
@@ -397,6 +395,60 @@ input[type=number] {
     flex-wrap: wrap;
 }
 
+/*Estilo de tabla */
+
+.contenedorTabla {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    border: none;
+}
+
+.headerTabla {
+    background: var(--bg-de);
+    color: white;
+}
+
+    .headerTabla th {
+        text-align: center;
+        color: white;
+    }
+
+.rowTabla {
+    text-align: center;
+    border-bottom: 1px solid rgba(30,70,130,0.1);
+}
+
+    .rowTabla td {
+        text-align: center;
+        border: none;
+    }
+
+/* Carta de detalle */
+
+.blur-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 1000;
+}
+
+.cartaDetalle {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255,255,255,1 );
+    z-index: 1000;
+    border: 0px;
+    padding: 5px 12px 0px 15px;
+    border-radius: 10px;
+}
 
 /*
 @media (min-width: 1480px) {

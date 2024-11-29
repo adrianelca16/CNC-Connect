@@ -1,0 +1,231 @@
+﻿@page "/Destinatarios"
+@inject NavigationManager NavigationManager
+@inject IRepository repository
+@inject IDialogService DialogService
+
+
+<MudContainer Class="container-body">
+    <h3>DESTINATARIOS</h3>
+    <MudContainer Style="display: flex; align-items: center; gap: 30px;">
+        @* <InputFile OnChange="seleccionarArchivo" /> *@
+
+        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" OnFilesChanged="seleccionarArchivo">
+            <ActivatorContent>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ContentPasteSearch" Size="Size.Small">Buscar Excel</MudButton>
+            </ActivatorContent>
+        </MudFileUpload>
+        @if (_files != null)
+        {
+            <MudList T="string">
+                @foreach (var file in _files)
+                {
+                    <MudListItem Icon="@Icons.Material.Filled.AttachFile" @key="@file">@file.Name 
+                        @* <code>@file.Size bytes</code> *@
+                    </MudListItem>
+                }
+            </MudList>
+        }
+
+        @if(ListCustomers?.Count > 0) {
+            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" Size="Size.Small" OnClick="(()=> CreateAsync())" Label="Subir" />
+        }
+
+    </MudContainer>
+    <MudContainer Style="display: flex; align-items: center; gap: 30px;">
+        @if (ListCustomers?.Count > 0)
+        {
+            <MudButton OnClick="@(() => verOtros(ListCustomers,"Vista Previa."))" Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.RemoveRedEye" Size="Size.Small" Color="Color.Primary" Style="text-transform:none">Vista Previa</MudButton>
+        }
+        @if (customersDuplicados?.Count > 0)
+        {
+            @* <MudIconButton Icon="@Icons.Material.Rounded.RemoveRedEye" Size="Size.Small" Color="Color.Tertiary" OnClick="@(() => verOtros(customersDuplicados,"Duplicados."))">Registros Duplicados</MudIconButton> *@
+            <MudButton OnClick="@(() => verOtros(customersDuplicados,"Destinatarios Duplicados."))" Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.RemoveRedEye" Size="Size.Small" Color="Color.Warning" Style="text-transform:none">Registros Duplicados</MudButton>
+        }
+        @if (customersInvalidos?.Count > 0)
+        {
+            <MudButton OnClick="@(() => verOtros(customersInvalidos,"Destinatarios Invalidos."))" Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.RemoveRedEye" Size="Size.Small" Color="Color.Error" Style="text-transform:none">Registros Invalidos</MudButton>
+        }
+    </MudContainer>
+    <br />
+    <MudContainer>
+        @if (ListCustomers?.Count > 0)
+        {
+            <TablaDestinatarios lista="@verList" title="@titulo" />
+        }
+    </MudContainer>
+
+@*     @if (mostrar)
+    {
+
+        <div class="blur-overlay" @onclick="ocultar"></div>
+
+        <div class="cartaDetalle">
+            <div class="contenedorTabla" style="justify-content: end; padding-bottom: 10px;">
+                <MudIconButton Icon="@Icons.Material.Rounded.Close" Color="Color.Error" OnClick="ocultar" Size="Size.Small" />
+            </div>
+
+            <TablaDestinatarios lista="@verList" title="@titulo"/>
+        </div>
+
+    } *@
+
+</MudContainer>
+
+
+@code {
+
+    IList<IBrowserFile> _files = new List<IBrowserFile>();
+    private void UploadFiles(IBrowserFile file)
+    {
+        _files.Add(file);
+        //TODO upload the files to the server
+    }
+
+    private bool mostrar = false;
+    private string titulo = "";
+
+    private Customers customers = new();
+    private List<Customers>? ListCustomers = new();
+
+    private List<Customers>? customersDuplicados = new();
+    private List<Customers>? customersInvalidos = new();
+    private List<Customers>? verList = new();
+
+    private void verOtros(List<Customers>? list, string title)
+    {
+        if(title != "Vista Previa.")
+        {
+            mostrar = true;
+        }
+        
+        verList = list;
+        titulo = title;        
+    }
+
+    private void ocultar()
+    {
+        mostrar = false;
+    }
+
+    public List<Customers> leerExcel(string filePath)
+    {
+        var dataList = new List<Customers>();
+
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+        using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
+        {
+            using (var reader = ExcelReaderFactory.CreateReader(stream))
+            {
+                while (reader.Read())
+                {
+                    if (reader.Depth == 0) continue; // Ignorar encabezado
+
+                    // Validar que al menos una columna tenga datos
+                    if (camposVacios(reader)) continue;
+
+                    dataList.Add(new Customers
+                        {
+                            FirstName = reader.GetValue(0)?.ToString(), // Columna 1
+                            LastNames = reader.GetValue(1)?.ToString(), // Columna 2
+                            CI = reader.GetValue(2)?.ToString(),        // Columna 3
+                            Email = reader.GetValue(3)?.ToString(),     // Columna 4
+                            Phone = reader.GetValue(4)?.ToString(),     // Columna 5
+                            Sex = reader.GetValue(5)?.ToString(),       // Columna 6
+                            Address = reader.GetValue(6)?.ToString(),   // Columna 7
+                            Birthdate = DateTime.TryParse(reader.GetValue(7)?.ToString(), out var date) ? date :  DateTime.MinValue // Columna 8
+                            //Birthdate = ParseBirthdate(reader.GetValue(7)?.ToString()) // Columna 8
+                        });
+                }
+            }
+        }
+
+        return dataList;
+    }
+
+    // Método para verificar si una fila está vacía
+    private bool camposVacios(IExcelDataReader reader)
+    {
+        for (int i = 0; i < reader.FieldCount; i++)
+        {
+            if (!string.IsNullOrEmpty(reader.GetValue(i)?.ToString()))
+            {
+                return false; // Si al menos una celda tiene datos, no está vacía
+            }
+        }
+        return true; // Si todas las celdas están vacías, la fila está vacía
+    }
+
+    // Manejar archivo seleccionado
+    private async Task seleccionarArchivo(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        // Guardar archivo temporalmente
+        var tempPath = Path.Combine(Path.GetTempPath(), file.Name);
+        using (var stream = new FileStream(tempPath, FileMode.Create))
+        {
+            await file.OpenReadStream().CopyToAsync(stream);
+        }
+
+        // Leer el archivo Excel
+        ListCustomers = leerExcel(tempPath);
+        verOtros(ListCustomers,"Vista Previa.");
+
+
+    // Elimina el archivo temporal después de procesarlo
+        if (File.Exists(tempPath))
+        {
+            File.Delete(tempPath);
+        }
+    }
+
+    // Crear registro en la API
+    private async Task CreateAsync()
+    {
+        if (ListCustomers == null || !ListCustomers.Any())
+        {
+            DialogService.Show<Destinatarios>("Error", new DialogParameters { { "Icon", "error" }, { "Message", "No hay datos para procesar" } });
+            return;
+        }
+
+        if (ListCustomers.Any())
+        {
+            foreach (var customer in ListCustomers)
+            {
+                customers = customer; // Asigna la lista al modelo si tienes una propiedad Lista
+
+                var responseHttp = await repository.Post<Customers>("api/Customers", customers);
+                if (responseHttp.Error)
+                {
+                    var message = await responseHttp.GetErrorMessageAsync();
+
+                    // Verifica si el error es por registro duplicado
+                    if (message.Contains("existe") || message.Contains("Destinatario ya existe.")) // Ajusta este mensaje según la API
+                    {
+                        customersDuplicados?.Add(customer); // Agrega el registro duplicado a la lista
+                    }
+                    else
+                    {
+                        customersInvalidos?.Add(customer); // Agrega los registros con errores de formato
+                    }
+                    //return;
+                }
+            }
+
+            // Mostrar la tabla con registros problemáticos si existen
+            if (customersDuplicados.Any() || customersInvalidos.Any())
+            {
+                DialogService.Show<MessageBox>("Advertencia", new DialogParameters { { "Icon", "warning" }, { "Message", "Proceso finalizado. Tiene registros duplicados y/o invalidos." } });               
+            }
+            else
+            {
+                DialogService.Show<MessageBox>("Informacion", new DialogParameters { { "Icon", "success" }, { "Message", "Proceso finalizado con exito." } });
+            }
+
+        }
+       
+    }
+
+
+}

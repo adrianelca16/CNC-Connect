@@ -155,7 +155,7 @@
         {
             var mensajePersonalizado = mensaje;
 
-            mensajePersonalizado = mensajePersonalizado.Replace("{Nombre Completo}", $"{customer.FirstName} {customer.LastNames}");
+            mensajePersonalizado = mensajePersonalizado.Replace("{Nombre Completo}",$"{customer.FirstName} {customer.LastNames}");
             mensajePersonalizado = mensajePersonalizado.Replace("{Nombres}", customer.FirstName);
             mensajePersonalizado = mensajePersonalizado.Replace("{Apellidos}", customer.LastNames);
             mensajePersonalizado = mensajePersonalizado.Replace("{Fecha de Nacimiento}", customer.Birthdate.ToString("dd/MM/yyyy"));

@@ -107,6 +107,9 @@
             var fechaDesde = DateTime.Now;
             var fechaHasta = DateTime.Now;
 
+            var edadInicio = 0;
+            var edadFin = 0;
+
             if (propiedad == "Fecha_de_Nacimiento")
             {
                 var partsFecha = valor.Split('a');
@@ -114,12 +117,21 @@
                 fechaHasta = DateTime.Parse(partsFecha[1]);
             }
 
+            if(propiedad == "Edad")
+            {
+                var partsEdad = valor.Split('-');
+                edadInicio = int.Parse(partsEdad[0]) - 1;
+                edadFin = int.Parse(partsEdad[1]) + 1;
+                
+            }
+
             // Filtrar según el nombre de la propiedad
             filteredList = propiedad switch
             {
                 "Sexo" => filteredList.Where(c => c.Sex == valor),
                 "Fecha_de_Nacimiento" => filteredList.Where(c => c.Birthdate >= fechaDesde && c.Birthdate <= fechaHasta),
-                // "Edad" => filteredList.Where(c => c.Age.ToString() == valor),
+                "Edad" => filteredList.Where(c => c.Birthdate <= DateTime.Now.AddYears(-edadInicio) &&
+    c.Birthdate >= DateTime.Now.AddYears(-edadFin)),
                 // Agrega más condiciones aquí según las propiedades que deseas filtrar
                 _ => filteredList
             };
@@ -151,31 +163,53 @@
 
     private async Task SendMessage()
     {
-        foreach (var customer in FilteredCustomers!)
+        try
         {
-            var mensajePersonalizado = mensaje;
-
-            mensajePersonalizado = mensajePersonalizado.Replace("{Nombre Completo}",$"{customer.FirstName} {customer.LastNames}");
-            mensajePersonalizado = mensajePersonalizado.Replace("{Nombres}", customer.FirstName);
-            mensajePersonalizado = mensajePersonalizado.Replace("{Apellidos}", customer.LastNames);
-            mensajePersonalizado = mensajePersonalizado.Replace("{Fecha de Nacimiento}", customer.Birthdate.ToString("dd/MM/yyyy"));
-            mensajePersonalizado = mensajePersonalizado.Replace("{Sexo}", customer.Sex);
-
-
-            var telefonoCorrecto = customer.Phone;
-
-            if (telefonoCorrecto.StartsWith("0"))
+            foreach (var customer in FilteredCustomers!)
             {
-                telefonoCorrecto = "58" + telefonoCorrecto.Substring(1);
+                //personalizar el mensaje
+
+                var mensajePersonalizado = mensaje;
+
+                mensajePersonalizado = mensajePersonalizado.Replace("{Nombre Completo}", $"{customer.FirstName} {customer.LastNames}");
+                mensajePersonalizado = mensajePersonalizado.Replace("{Nombres}", customer.FirstName);
+                mensajePersonalizado = mensajePersonalizado.Replace("{Apellidos}", customer.LastNames);
+                mensajePersonalizado = mensajePersonalizado.Replace("{Fecha de Nacimiento}", customer.Birthdate.ToString("dd/MM/yyyy"));
+                mensajePersonalizado = mensajePersonalizado.Replace("{Sexo}", customer.Sex);
+
+                //Dar fotmato al telefono
+                var telefonoCorrecto = customer.Phone;
+
+                if (telefonoCorrecto.StartsWith("0"))
+                {
+                    telefonoCorrecto = "58" + telefonoCorrecto.Substring(1);
+                }
+                else if (telefonoCorrecto.StartsWith("4"))
+                {
+                    telefonoCorrecto = "58" + telefonoCorrecto;
+                }
+
+
+                //envio del mensaje
+                if (telefonoCorrecto.Length >= 10 && (mensajePersonalizado != null || mensajePersonalizado != ""))
+                {
+                    var sendSuccess = await WhatsAppService.SendMessageAsync(telefonoCorrecto, mensajePersonalizado!);
+
+                }
             }
 
-            if(telefonoCorrecto.Length >= 10 && (mensajePersonalizado != null || mensajePersonalizado != ""))
-            {
-                var sendSuccess = await WhatsAppService.SendMessageAsync(telefonoCorrecto, mensajePersonalizado!);
-                mensaje = "";
-                _value = "";
-                FilteredCustomers = null;
-            }
+            //reseteo de variables
+            mensaje = "";
+            _value = "";
+            FiltrosAplicados = new List<string>();
+            FilteredCustomers = Customers;
+
+            Clientes = string.Join(", ", FilteredCustomers!.Select(c => c.FirstName));
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            DialogService.Show<Destinatarios>("Error", new DialogParameters { { "Icon", "error" }, { "Message", ex.Message } });
         }
     }
 }

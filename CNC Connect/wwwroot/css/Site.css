@@ -258,6 +258,20 @@ input[type=number] {
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     position: relative;
     overflow: visible;
+    justify-content:space-between;
+}
+.lateral-menu-subcontainer{
+    display:flex;
+    flex-direction:column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.ButtonContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 

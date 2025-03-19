@@ -5,43 +5,80 @@
 
 <MudContainer Style="margin-top:10px;">
     <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Style="margin-bottom:15px" OnClick="OnVolver">Volver</MudButton>
-    <div Class="container-whatsapp">
-        <div class="variables-container">
-            <MudText Typo="Typo.h6">Variables</MudText>
+    @if (Skeleton)
+    {
+        <MudSkeleton />
+        <MudSkeleton Animation="Animation.False" />
+        <MudSkeleton Animation="Animation.Wave" />
+    }
+    else{
+        <div Class="container-whatsapp">
+            <div class="variables-container">
+                <MudText Typo="Typo.h6">Variables</MudText>
 
-            <div class="variables">
-                <MudSelect @bind-Value="_value" Clearable="true" Variant="Variant.Outlined" Margin="Margin.Dense">
-                    @foreach (var variables in _variables)
-                    {
-                        <MudSelectItem Value="variables">@variables</MudSelectItem>
-                    }
-                </MudSelect>
+                <div class="variables">
+                    <MudSelect @bind-Value="_value" Clearable="true" Variant="Variant.Outlined" Margin="Margin.Dense">
+                        @foreach (var variables in _variables)
+                        {
+                            <MudSelectItem Value="variables">@variables</MudSelectItem>
+                        }
+                    </MudSelect>
 
-                <div Style="height: auto;">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.AddCircle" IconSize="Size.Small" Size="Size.Small" OnClick="AgregarVariable">Agregar</MudButton>
+                    <div Style="height: auto;">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.AddCircle" IconSize="Size.Small" Size="Size.Small" OnClick="AgregarVariable">Agregar</MudButton>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="mensaje-container">
-            <MudButton StartIcon="@Icons.Material.Filled.PermContactCalendar" Size="Size.Large" IconSize="Size.Large" Style="width: max-content" OnClick="OpenDialogAsync">Destinatarios</MudButton>
+            <div class="mensaje-container">
+                <MudButton StartIcon="@Icons.Material.Filled.PermContactCalendar" Size="Size.Large" IconSize="Size.Large" Style="width: max-content" OnClick="OpenDialogAsync">Destinatarios</MudButton>
 
-            <MudTextField T="string" Label="Para:" @bind-Value=Clientes ReadOnly="true" Variant="Variant.Outlined" Lines="1" />
+                <MudTextField T="string" Label="Para:" @bind-Value=Clientes ReadOnly="true" Variant="Variant.Outlined" Lines="1" />
 
-            <MudTextField T="string" Label="Mensaje:" Variant="Variant.Outlined" @bind-Value="mensaje" Lines="5"/>
+                <MudTextField T="string" Label="Mensaje:" Variant="Variant.Outlined" @bind-Value="mensaje" Lines="5" />
 
-            <div class="buton-container">
-                <div style="height:auto">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Send" Size="Size.Small" OnClick="SendMessage">Enviar</MudButton>
+                <div class="buton-container">
+                    <div style="height:auto">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Send" Size="Size.Small" OnClick="ConfirmDialogMessage">Enviar</MudButton>
+                    </div>
+
+                    <div>
+                        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+                            <ActivatorContent>
+                                <MudIconButton Color="Color.Primary"
+                                               Icon="@Icons.Material.Filled.PhotoCamera">
+                                </MudIconButton>
+                            </ActivatorContent>
+                        </MudFileUpload>
+                        <MudIconButton Icon="@Icons.Material.Filled.AddLink" Size="Size.Large" />
+                    </div>
+
+
                 </div>
-
-                <div>
-                    <MudIconButton Icon="@Icons.Material.Filled.AddPhotoAlternate" Size="Size.Large"/>
-                    <MudIconButton Icon="@Icons.Material.Filled.AddLink" Size="Size.Large" />
-                </div>
+                @if (_files != null)
+                {
+                    <MudList T="string">
+                        <MudListItem Icon="@Icons.Material.Filled.AttachFile" @key="@_files">
+                            @_files.Name <code>@_files.Size bytes</code>
+                        </MudListItem>
+                    </MudList>
+                }
             </div>
         </div>
-    </div>
+    }
+    
 </MudContainer>
+
+<MudDialog @bind-Visible="visible" Options=" new() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackdropClick = false }">
+    <DialogContent>
+        <MudText Typo="Typo.h6" Align="Align.Center">Enviando Mensajes</MudText>
+        <MudProgressLinear Value="ProgressValue" Color="Color.Primary" Class="mt-4" Rounded="true" Size="Size.Large" Striped="true" />
+        <MudText Typo="Typo.subtitle2" Align="Align.Center" Class="mt-2">
+            @($"{ProgressValue:F0}% completado")
+        </MudText>
+        <MudText>@processedCount de @totalProcessedCount</MudText>
+    </DialogContent>
+</MudDialog>
+
 @code {
     [Parameter]
     public EventCallback OnVolver { get; set; }
@@ -61,13 +98,42 @@
     "Nombre Completo", "Nombres", "Apellidos", "Fecha de Nacimiento", "Sexo"
     ];
 
+    private double ProgressValue = 0; // Variable para el progreso global
+    private int processedCount = 0;
+    private int totalProcessedCount = 0;
+    private bool Skeleton = true;
+
+    private bool visible = false;
+
+    private byte[]? _imageData;
+
+    IBrowserFile _files;
+
+    private async Task UploadFiles(IBrowserFile file)
+    {
+        try
+        {
+            // Convertir el archivo a byte[]
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(memoryStream);
+            _imageData = memoryStream.ToArray();
+
+            _files = file; // Guarda la referencia para mostrar en la UI
+        }
+        catch (Exception ex)
+        {
+            await DialogService.ShowMessageBox("Error", $"Error al cargar el archivo: {ex.Message}");
+        }
+    }
+
 
     protected async override Task OnInitializedAsync()
     {
         var responseHppt = await repository.Get<List<Customers>>("api/Customers");
         Customers = responseHppt.Response!;
         Clientes = string.Join(", ", Customers.Select(c => c.FirstName));
-        FilteredCustomers = Customers; 
+        FilteredCustomers = Customers;
+        Skeleton = false;
     }
 
     private async Task OpenDialogAsync()
@@ -122,7 +188,7 @@
                 var partsEdad = valor.Split('-');
                 edadInicio = int.Parse(partsEdad[0]) - 1;
                 edadFin = int.Parse(partsEdad[1]) + 1;
-                
+
             }
 
             // Filtrar según el nombre de la propiedad
@@ -161,55 +227,90 @@
         mensaje += "{"+ _value + "}";
     }
 
+    private async Task ConfirmDialogMessage()
+    {
+        var parameters = new DialogParameters { { "Mensaje", mensaje } };
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, Position = DialogPosition.TopCenter };
+
+        var dialogReference = await DialogService.ShowAsync<MessageConfirm>("Confirmacion", parameters, options);
+
+        //Filtro de los clientes
+
+        dialogReference?.Result.ContinueWith(result =>
+       {
+           if (result.Result?.Canceled == false) // Opcional: verifica si el diálogo fue cancelado
+           {
+               InvokeAsync(SendMessage); // Ejecuta onFiltro en el contexto de Blazor
+           }
+       });
+    }
+
     private async Task SendMessage()
     {
         try
         {
+            ProgressValue = 0;
+            processedCount = 0;
+            var totalCustomers = FilteredCustomers?.Count ?? 0;
+            totalProcessedCount = totalCustomers;
+
+            visible = true;
             foreach (var customer in FilteredCustomers!)
             {
-                //personalizar el mensaje
+                // Personalizar el mensaje
+                var mensajePersonalizado = mensaje
+                    .Replace("{Nombre Completo}", $"{customer.FirstName} {customer.LastNames}")
+                    .Replace("{Nombres}", customer.FirstName)
+                    .Replace("{Apellidos}", customer.LastNames)
+                    .Replace("{Fecha de Nacimiento}", customer.Birthdate.ToString("dd/MM/yyyy"))
+                    .Replace("{Sexo}", customer.Sex);
 
-                var mensajePersonalizado = mensaje;
+                // Dar formato al teléfono
+                var telefonoCorrecto = customer.Phone.StartsWith("0")
+                    ? "58" + customer.Phone.Substring(1)
+                    : customer.Phone.StartsWith("4")
+                        ? "58" + customer.Phone
+                        : customer.Phone;
 
-                mensajePersonalizado = mensajePersonalizado.Replace("{Nombre Completo}", $"{customer.FirstName} {customer.LastNames}");
-                mensajePersonalizado = mensajePersonalizado.Replace("{Nombres}", customer.FirstName);
-                mensajePersonalizado = mensajePersonalizado.Replace("{Apellidos}", customer.LastNames);
-                mensajePersonalizado = mensajePersonalizado.Replace("{Fecha de Nacimiento}", customer.Birthdate.ToString("dd/MM/yyyy"));
-                mensajePersonalizado = mensajePersonalizado.Replace("{Sexo}", customer.Sex);
-
-                //Dar fotmato al telefono
-                var telefonoCorrecto = customer.Phone;
-
-                if (telefonoCorrecto.StartsWith("0"))
+                //Enviar el mensaje
+                if (telefonoCorrecto.Length >= 10 && !string.IsNullOrEmpty(mensajePersonalizado))
                 {
-                    telefonoCorrecto = "58" + telefonoCorrecto.Substring(1);
-                }
-                else if (telefonoCorrecto.StartsWith("4"))
-                {
-                    telefonoCorrecto = "58" + telefonoCorrecto;
+                    if (_imageData != null)
+                    {
+                        await WhatsAppService.SendMessageWithImageAsync(telefonoCorrecto, mensajePersonalizado, _imageData);
+                    }
+                    else
+                    {
+                        await WhatsAppService.SendMessageAsync(telefonoCorrecto, mensajePersonalizado!);
+                    }
                 }
 
+                // Actualizar progreso
+                processedCount++;
+                ProgressValue = (double)processedCount / totalCustomers * 100;
 
-                //envio del mensaje
-                if (telefonoCorrecto.Length >= 10 && (mensajePersonalizado != null || mensajePersonalizado != ""))
-                {
-                    var sendSuccess = await WhatsAppService.SendMessageAsync(telefonoCorrecto, mensajePersonalizado!);
+                // Forzar actualización en vivo
+                await InvokeAsync(StateHasChanged);
 
-                }
+                // Simular progreso visualmente (opcional)
+                await Task.Delay(200);
             }
 
-            //reseteo de variables
+            visible = false;
+
+            // Resetear variables
             mensaje = "";
             _value = "";
             FiltrosAplicados = new List<string>();
             FilteredCustomers = Customers;
-
             Clientes = string.Join(", ", FilteredCustomers!.Select(c => c.FirstName));
+            _imageData = null;
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            DialogService.Show<Destinatarios>("Error", new DialogParameters { { "Icon", "error" }, { "Message", ex.Message } });
+            DialogService.Show<MessageBox>("Error", new DialogParameters { { "Icon", "error" }, { "Message", ex.Message } });
         }
     }
+
 }

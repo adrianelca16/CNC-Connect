@@ -8,6 +8,7 @@ using CNC_Connect.Helpers;
 using CNC_Connect.Repositories;
 using CNC_Connect.Auth;
 using CNC_Connect.Layout;
+using System.Net.Http.Headers;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -18,6 +19,7 @@ builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri("http
 builder.Services.AddHttpClient("WhatsAppClient", client =>
 {
     client.BaseAddress = new Uri("http://localhost:3002/");
+    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 });
 
 

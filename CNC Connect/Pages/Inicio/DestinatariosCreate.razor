@@ -201,7 +201,7 @@
                     var message = await responseHttp.GetErrorMessageAsync();
 
                     // Verifica si el error es por registro duplicado
-                    if (message.Contains("existe") || message.Contains("Destinatario ya existe.")) // Ajusta este mensaje según la API
+                    if (message!.Contains("existe") || message.Contains("Destinatario ya existe.")) // Ajusta este mensaje según la API
                     {
                         customersDuplicados?.Add(customer); // Agrega el registro duplicado a la lista
                     }

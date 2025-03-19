@@ -1,0 +1,14 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6" Align="Align.Center">@Title</MudText>
+        <MudProgressLinear Value="@Progress" Color="Color.Primary" Class="mt-4" />
+        <MudText Typo="Typo.subtitle2" Align="Align.Center" Class="mt-2">
+            @($"{Progress:F0}% completado")
+        </MudText>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Progreso";
+    [Parameter] public double Progress { get; set; } // El progreso se enlaza dinámicamente
+}

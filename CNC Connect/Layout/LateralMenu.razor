@@ -2,23 +2,44 @@
 @inject NavigationManager NavigationManager
 
 <MudPaper Width="250px" Elevation="0" Class="py-3 LateralMenu">
-    <MudNavMenu Color="Color.Primary" Bordered="true" Style="font-size:1.3em">
-        <MudNavGroup Icon="@Icons.Material.Filled.Mail" Title="Correo">
-            <MudNavLink Href="/Email/Create" >Redactar</MudNavLink>
-            <MudNavLink Href="/Email/Send">Enviados</MudNavLink>
-        </MudNavGroup>
-        <MudNavGroup Title="Mensajes" Icon="@Icons.Material.Filled.Sms">
-            <MudNavLink Href="/Message/Create">Redactar</MudNavLink>
-            <MudNavLink Href="/Message/Send">Enviados</MudNavLink>
-        </MudNavGroup>
-        <MudNavLink Href="/Meta" Icon="@Icons.Material.Filled.AllInclusive">Meta</MudNavLink>
-    </MudNavMenu>
+    <div class="lateral-menu-subcontainer">
+        <MudNavMenu Color="Color.Primary" Bordered="true" Style="font-size:1.3em">
+            <MudNavGroup Icon="@Icons.Material.Filled.Mail" Title="Correo">
+                <MudNavLink Href="/Email/Create">Redactar</MudNavLink>
+                <MudNavLink Href="/Email/Send">Enviados</MudNavLink>
+            </MudNavGroup>
+            <MudNavGroup Title="Mensajes" Icon="@Icons.Material.Filled.Sms">
+                <MudNavLink Href="/Message/Create">Redactar</MudNavLink>
+                <MudNavLink Href="/Message/Send">Enviados</MudNavLink>
+            </MudNavGroup>
+            <MudNavLink Href="/Meta" Icon="@Icons.Material.Filled.AllInclusive">Meta</MudNavLink>
+        </MudNavMenu>
+        <div class="ButtonContainer">
+            <MudSwitch Value="@mode"
+                        Color="Color.Primary"
+                       ThumbIcon="@(mode ? Icons.Material.Filled.LightMode :   Icons.Material.Filled.DarkMode)"
+                       
+                       ThumbIconColor="Color.Dark" onclick="@OnModeChanged" />
+
+        </div>
+    </div>
 </MudPaper>
 
 
 
 @code {
     private string UserName { get; set; } = null!;
+
+    [Parameter] public bool mode { get; set; }
+    [Parameter] public EventCallback<bool> modeChanged { get; set; }
+
+    private async Task OnModeChanged(MouseEventArgs args)
+    {
+        // Notifica al componente padre el cambio
+        mode = !mode;
+        Console.WriteLine(mode);
+        await modeChanged.InvokeAsync(mode);
+    }
 
     protected override async Task OnInitializedAsync()
     {

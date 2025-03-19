@@ -23,33 +23,28 @@ namespace CNC_shared.Entities
 
         [Display(Name = "Apellidos")]
         [MaxLength(50, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string LastNames { get; set; } = null!;
+        public string LastNames { get; set; }
 
         
         [Display(Name = "Sexo")]
         [MaxLength(50, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string Sex { get; set; } = null!;
+        public string Sex { get; set; }
 
         [Display(Name = "Direccion")]
         [MaxLength(500, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string Address { get; set; } = null!;
+        public string Address { get; set; }
 
         [Display(Name = "Fecha_Nacimiento")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public DateTime Birthdate { get; set; }
 
         [Display(Name = "Telefono")]
         [MaxLength(15, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
-        public string Phone { get; set; } = null!;
+        public string Phone { get; set; }
 
         [Display(Name = "Correo")]
         [MaxLength(50, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
-        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         [EmailAddress]
-        public string Email { get; set; } = null!;
+        public string Email { get; set; }
     }
 }

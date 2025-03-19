@@ -15,7 +15,7 @@
         </NotAuthorized>
         <Authorized>
             <NavBar /> 
-            <LateralMenu/>
+            <LateralMenu mode="isDark" modeChanged="OnModeChanged" />
         </Authorized>
     </AuthorizeView>
     <main>
@@ -35,12 +35,27 @@
                 Primary = Colors.Teal.Lighten1,
                 Tertiary = Colors.DeepOrange.Accent1,
             },
+            PaletteDark = new PaletteDark()
+            {
+                Secondary = Colors.Blue.Accent1,
+                Primary = Colors.Teal.Lighten1,
+                Tertiary = Colors.DeepOrange.Accent1,
+                TextPrimary = Colors.Gray.Lighten5,
+                Dark = Colors.Gray.Lighten5,
+            }
         };
 
     private RenderFragment RedirectToLogin() => builder =>
     {
         navigationManager.NavigateTo("Login");
     };
+
+    private void OnModeChanged(bool value)
+    {
+        // Actualiza el estado del modo oscuro
+        isDark = value;
+        StateHasChanged(); // Refresca la UI si es necesario
+    }
 
     private bool IsLoginPage()
     {
